@@ -1,4 +1,5 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
+from rest_framework.viewsets import GenericViewSet
 
 from .api.serializers import *
 
@@ -32,5 +33,12 @@ class ClassesViewSet(viewsets.ModelViewSet):
     serializer_class = ClassesSerializer
 
 
+class JoinViewSet(mixins.CreateModelMixin,
+                  GenericViewSet):
+    serializer_class = JoinClassesSerializer
+
+
 class UserViewSet(TokenObtainPairView):
     serializer_class = UserSerializer
+
+

@@ -78,3 +78,29 @@ class UserSerializer(TokenObtainPairSerializer):
         data['refresh exp'] = api_settings.__getattr__('REFRESH_TOKEN_LIFETIME')
 
         return data
+
+
+class JoinClassesSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    class_ = serializers.PrimaryKeyRelatedField(queryset=Classes.objects)
+    teacher = serializers.PrimaryKeyRelatedField(queryset=Teachers.objects, allow_null=True)
+    student = serializers.PrimaryKeyRelatedField(queryset=Students.objects, allow_null=True)
+    subject = serializers.PrimaryKeyRelatedField(queryset=Subjects.objects, allow_null=True)
+
+    def create(self, validated_data):
+        if validated_data['class'] is not None:
+            class_ = validated_data['class']
+
+        if validated_data['student'] is not None:
+            student = validated_data['student']
+            class_.add(student)
+
+        if validated_data['teacher'] is not None:
+            teacher = validated_data['teacher']
+            class_.add(teacher)
+
+        if validated_data['subject'] is not None:
+            subject = validated_data['subject']
+            class_.add(subject)

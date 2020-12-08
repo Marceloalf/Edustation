@@ -6,6 +6,7 @@ from escola_v1.views import *
 
 router = DefaultRouter()
 router.register(r'class', ClassesViewSet)
+router.register(r'join', JoinViewSet, basename='join')
 
 instance_router = DefaultRouter()
 instance_router.register(r'student', StudentsViewSet)
