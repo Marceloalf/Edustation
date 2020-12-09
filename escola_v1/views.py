@@ -1,7 +1,9 @@
 from rest_framework import viewsets, mixins
 from rest_framework.viewsets import GenericViewSet
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .api.serializers import *
+from .models import *
 
 
 class StudentsViewSet(viewsets.ModelViewSet):

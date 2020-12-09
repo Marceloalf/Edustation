@@ -1,6 +1,4 @@
-from rest_framework_simplejwt.views import TokenObtainPairView
-
-from escola_v1.models import *
+from escola_v1 import models
 
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -8,14 +6,14 @@ from rest_framework_simplejwt.settings import api_settings
 
 
 class StudentSerializer(serializers.ModelSerializer):
-    classes = serializers.HyperlinkedRelatedField(
+    student_classes = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
         view_name='classes-detail',
     )
 
     class Meta:
-        model = Students
+        model = models.Students
         fields = (
             'id',
             'name',
@@ -23,19 +21,19 @@ class StudentSerializer(serializers.ModelSerializer):
             'birth',
             'email',
             'user',
-            'classes'
+            'student_classes'
         )
 
 
 class TeacherSerializer(serializers.ModelSerializer):
-    classes = serializers.HyperlinkedRelatedField(
+    teacher_classes = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
         view_name='classes-detail',
     )
 
     class Meta:
-        model = Teachers
+        model = models.Teachers
         fields = (
             'id',
             'name',
@@ -43,30 +41,30 @@ class TeacherSerializer(serializers.ModelSerializer):
             'birth',
             'email',
             'user',
-            'classes'
+            'teacher_classes'
         )
 
 
 class SubjectSerializer(serializers.ModelSerializer):
-    classes = serializers.HyperlinkedRelatedField(
+    subject_classes = serializers.HyperlinkedRelatedField(
         many=True,
         read_only=True,
         view_name='classes-detail',
     )
 
     class Meta:
-        model = Subjects
+        model = models.Subjects
         fields = (
             'id',
             'name',
             'created_at',
-            'classes'
+            'subject_classes'
         )
 
 
 class ClassesSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Classes
+        model = models.Classes
         fields = "__all__"
 
 
@@ -81,26 +79,24 @@ class UserSerializer(TokenObtainPairSerializer):
 
 
 class JoinClassesSerializer(serializers.Serializer):
-    def update(self, instance, validated_data):
-        pass
-
-    class_ = serializers.PrimaryKeyRelatedField(queryset=Classes.objects)
-    teacher = serializers.PrimaryKeyRelatedField(queryset=Teachers.objects, allow_null=True)
-    student = serializers.PrimaryKeyRelatedField(queryset=Students.objects, allow_null=True)
-    subject = serializers.PrimaryKeyRelatedField(queryset=Subjects.objects, allow_null=True)
+    classes = serializers.PrimaryKeyRelatedField(queryset=models.Classes.objects)
+    subject = serializers.PrimaryKeyRelatedField(queryset=models.Subjects.objects, required=False)
+    teacher = serializers.PrimaryKeyRelatedField(queryset=models.Teachers.objects, required=False)
+    student = serializers.PrimaryKeyRelatedField(queryset=models.Students.objects, required=False)
 
     def create(self, validated_data):
-        if validated_data['class'] is not None:
-            class_ = validated_data['class']
+        classes = validated_data['classes']
 
-        if validated_data['student'] is not None:
-            student = validated_data['student']
-            class_.add(student)
-
-        if validated_data['teacher'] is not None:
-            teacher = validated_data['teacher']
-            class_.add(teacher)
-
-        if validated_data['subject'] is not None:
+        if "subject" in validated_data:
             subject = validated_data['subject']
-            class_.add(subject)
+            classes.subject.add(subject)
+
+        if "teacher" in validated_data:
+            teacher = validated_data['teacher']
+            classes.teacher.add(teacher)
+
+        if "student" in validated_data:
+            student = validated_data['student']
+            classes.student.add(student)
+
+        return validated_data

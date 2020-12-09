@@ -27,10 +27,10 @@ class Classes(models.Model):
     name = models.CharField(max_length=10)
     school_year = models.CharField(max_length=18, choices=sy)
     created_at = models.DateTimeField(auto_now_add=True)
-    student = models.ManyToManyField(Students, related_name='classes')
-    teachers = models.ManyToManyField(Teachers, related_name='classes')
-    subject = models.ManyToManyField(Subjects, related_name='classes')
+    student = models.ManyToManyField(Students, related_name='student_classes', blank=True)
+    teachers = models.ManyToManyField(Teachers, related_name='teacher_classes', blank=True)
+    subject = models.ManyToManyField(Subjects, related_name='subject_classes', blank=True)
 
     class Meta:
-        verbose_name = 'Class'
-        verbose_name_plural = 'Classes'
+        verbose_name = 'class'
+        verbose_name_plural = 'classes'
